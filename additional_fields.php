@@ -55,7 +55,11 @@ add_action( 'edit_user_profile', 'tm_additional_profile_fields' );
 function modify_contact_methods( $contact_fields ) {
 	// Новые поля
 	$contact_fields['Phone']  = 'Телефон';
+	$contact_fields['address']  = 'Адрес';
 
 	return $contact_fields;
 }
 add_filter('user_contactmethods', 'modify_contact_methods');
+
+add_user_meta( $user_id, $meta_key, $meta_value, $unique );
+
