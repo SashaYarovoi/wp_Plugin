@@ -66,5 +66,19 @@ add_filter('user_contactmethods', 'modify_contact_methods');
 
 add_user_meta( $user_id, $meta_key, $meta_value, $unique );
 
+function tm_save_profile_fields( $user_id ) {
 
+    if ( ! current_user_can( 'edit_user', $user_id ) ) {
+   	 return false;
+    }
+
+    if ( empty( $_POST['floor_date'] ) ) {
+   	 return false;
+    }
+
+    update_usermeta( $user_id, 'floor_date', $_POST['floor_date'] );
+}
+
+add_action( 'personal_options_update', 'tm_save_profile_fields' );
+add_action( 'edit_user_profile_update', 'tm_save_profile_fields' );
 
