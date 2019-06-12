@@ -5,80 +5,42 @@ Description: новые поля в профиль пользователя.
 Version: 1.0
 */
 
-function tm_additional_profile_fields( $user ) {
-    
-    $floors = array( 'Женский', 'Мужской' );
-    
-    $family_statuses = array( 'В браке', 'В разводе' , 'Не женат/Не замужем' );
-    
-    $floor_date = get_user_meta( $user->ID, 'floor_date', true);
-    
-    $family_status_date = get_user_meta( $user->ID, 'family_statusr_date', true);
-    ?>
-    <h3>Дополнительная информация</h3>
+### дополнительные данные на странице профиля
+add_action('show_user_profile', 'my_profile_new_fields_add');
+add_action('edit_user_profile', 'my_profile_new_fields_add');
 
-    <table class="form-table">
-   	 <tr>
-   		 <th><label for="floor-date-day">Пол</label></th>
-   		 <td>
-   			 
-   			 <select id="floor-date" name="floor"><?php
-   				 foreach ( $floors as $floor ) {
-   					printf( '<option value="%1$s" %2$s>%1$s</option>', $floor, selected( $floor_date, $floor, false ) ); 
-   				 }
-   			 ?></select>
-   			 
-   		 </td> 
-   	 </tr>
-    </table>
-<table class="form-table">
-   	 <tr>
+add_action('personal_options_update', 'my_profile_new_fields_update');
+add_action('edit_user_profile_update', 'my_profile_new_fields_update');
 
-   		 <th><label for="floor-date-day">Семейный статус</label></th>
-   		 <td>
-   			 
-   			 <select id="family-status-date" name="family"><?php
-   				 foreach ( $family_statuses as $family_status ) {
-   					printf( '<option value="%1$s" %2$s>%1$s</option>', $family_status, selected( $family_status_date, $family_status, false  ) ); 
-   				 }
-   			 ?></select>
-   			 
-   		 </td>
-   		 
-   	 </tr>
-    </table>
-    <?php
+function my_profile_new_fields_add(){ 
+	global $user_ID;
+	
+	$floor = get_user_meta( $user_ID, "user_floor", 1 );
+	$family = get_user_meta( $user_ID, "user_family_status", 1 );
+	?>
+	<h3>Дополнительные данные</h3>
+	<table class="form-table">
+		<tr>
+			<th><label for="user_pl_txt">Пол</label></th>
+			<td>
+				<input type="text" name="user_floor" value="<?php echo $floor ?>"><br>
+			</td>
+		</tr>
+		<tr>
+			<th><label for="user_st_txt">Семейный статус</label></th>
+			<td>
+				<input type="text" name="user_family_status" value="<?php echo $family ?>"><br>
+			</td>
+		</tr>
+	</table>
+	<?php            
 }
 
-
-add_action( 'show_user_profile', 'tm_additional_profile_fields' );
-add_action( 'edit_user_profile', 'tm_additional_profile_fields' );
-
-
-function modify_contact_methods( $contact_fields ) {
-	// Новые поля
-	$contact_fields['Phone']  = 'Телефон';
-	$contact_fields['address']  = 'Адрес';
-
-	return $contact_fields;
+// обновление
+function my_profile_new_fields_update(){
+	global $user_ID;
+	
+	update_user_meta( $user_ID, "user_floor", $_POST['user_floor'] );
+        update_user_meta( $user_ID, "user_family_status", $_POST['user_family_status'] );
 }
-add_filter('user_contactmethods', 'modify_contact_methods');
-
-add_user_meta( $user_id, $meta_key, $meta_value, $unique );
-
-function tm_save_profile_fields( $user_id ) {
-
-    if ( ! current_user_can( 'edit_user', $user_id ) ) {
-   	 return false;
-    }
-
-    if ( empty( $_POST['floor_date'] ) ) {
-   	 return false;
-    }
-
-    update_usermeta( $user_id, 'floor_date', $_POST['floor_date'] );
-}
-
-add_action( 'personal_options_update', 'tm_save_profile_fields' );
-add_action( 'edit_user_profile_update', 'tm_save_profile_fields' );
 
