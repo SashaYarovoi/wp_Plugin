@@ -44,3 +44,14 @@ function my_profile_new_fields_update(){
         update_user_meta( $user_ID, "user_family_status", $_POST['user_family_status'] );
 }
 
+
+function modify_contact_methods( $contact_fields ) {
+	// Новые поля
+	$contact_fields['tel']  = 'Телефон';
+	$contact_fields['adress'] = 'Адрес';
+	
+
+
+	return $contact_fields;
+}
+add_filter('user_contactmethods', 'modify_contact_methods');
